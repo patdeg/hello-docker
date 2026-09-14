@@ -1,0 +1,26 @@
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Docker build artifacts we don't want to commit
+**/downloads/
+**/*.jar
+!**/deps/*.jar
+
+# Minecraft world data / server runtime state (never commit these)
+11-minecraft-server-basic/data/
+11-minecraft-server-basic/world/
+12-minecraft-server-hardened/data/
+12-minecraft-server-hardened/world/
+**/logs/
+**/*.log
+
+# Local env files with real secrets (keep only *.env.example in git)
+.env
+**/.env
+!**/.env.example

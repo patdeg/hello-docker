@@ -1,0 +1,53 @@
+services:
+  minecraft:
+    build:
+      context: .
+      args:
+        # Fill these in yourself - see README.md for where to get them.
+        MC_VERSION: "REPLACE_ME"
+        MC_SERVER_URL: "REPLACE_ME"
+        MC_SERVER_SHA256: "REPLACE_ME_OR_LEAVE_BLANK"
+    ports:
+      - "25565:25565"
+      # RCON (25575) is deliberately NOT published here. Uncomment only if
+      # you actually need remote console access from outside this machine,
+      # and only after scoping it at your firewall - never expose RCON to
+      # the open internet.
+      # - "25575:25575"
+    env_file:
+      - .env  # copy .env.example -> .env first; never commit the real one
+    volumes:
+      - mc-data:/data
+
+    # --- Hardening ---
+    # The container's own filesystem can't be written to at all, except for
+    # the paths we explicitly carve out below. If the Minecraft process (or
+    # anything that ever runs inside it) tries to modify anything outside
+    # those paths, it fails.
+    read_only: true
+    tmpfs:
+      - /tmp
+    # Removes every Linux capability the container would otherwise have by
+    # default (e.g. binding low ports, manipulating other processes). The
+    # game port is unprivileged (>1024), so the server needs none of them.
+    cap_drop:
+      - ALL
+    # Even if some process inside gained elevated rights another way
+    # (e.g. a setuid binary), this stops it from getting MORE privileges
+    # than it started with.
+    security_opt:
+      - no-new-privileges:true
+    # Caps how much RAM/CPU/processes this one container can consume, so a
+    # runaway or compromised process can't take down the whole host.
+    mem_limit: 2560m
+    cpus: 2.0
+    pids_limit: 512
+
+    restart: unless-stopped
+    # Lets you `docker compose attach minecraft` for console access (see
+    # lesson 11's README) without also allowing Ctrl+C to kill the server.
+    stdin_open: true
+    tty: true
+
+volumes:
+  mc-data:
