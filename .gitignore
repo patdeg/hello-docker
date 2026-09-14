@@ -24,3 +24,6 @@ Thumbs.db
 .env
 **/.env
 !**/.env.example
+
+# Internal session/planning notes - not part of the public teaching content
+docs/
