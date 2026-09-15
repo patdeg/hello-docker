@@ -1,5 +1,5 @@
 # A real, working vanilla Minecraft: Java Edition server, using everything
-# from lessons 01-10: a base image, installing a package, build ARGs,
+# from lessons 01-12: a base image, installing a package, build ARGs,
 # EXPOSE, and a VOLUME for the world data.
 FROM eclipse-temurin:21-jre-jammy
 
@@ -32,4 +32,9 @@ EXPOSE 25565
 
 ENV JAVA_MEM=1024M
 
-CMD ["sh", "-c", "java -Xmx${JAVA_MEM} -Xms${JAVA_MEM} -jar server.jar nogui"]
+# `sh -c` is needed so ${JAVA_MEM} gets filled in. The `exec` matters just as
+# much: it makes java REPLACE the shell and become PID 1. Without it, sh stays
+# PID 1, never passes Docker's stop signal on to java, and `docker stop` ends
+# up force-killing the server after 10s — before it has saved the world.
+# (Lesson 03: "Why did docker stop only take a second?")
+CMD ["sh", "-c", "exec java -Xmx${JAVA_MEM} -Xms${JAVA_MEM} -jar server.jar nogui"]

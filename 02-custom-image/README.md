@@ -38,9 +38,11 @@ container's own hostname, a random ID, not your computer's.
 3. Remove the `RUN chmod +x` line, rebuild, and run it. You should get a
    "permission denied" error — this is a common real-world Docker mistake.
    Put the line back and confirm it works again.
-4. Run `docker run --rm --entrypoint sh custom-image` to get an interactive
-   shell instead of running the script — useful for poking around inside
-   any image.
+4. Run `docker run -it --rm --entrypoint sh custom-image` to get an
+   interactive shell instead of running the script — useful for poking
+   around inside any image. Look for `/hello.sh`, then type `exit`. (Leave
+   out `-it` and the shell exits instantly: it has no keyboard to read from.
+   Lesson 03 explains.)
 
-Next: [03-installing-packages](../03-installing-packages/) — pull in
-software that isn't part of the base image.
+Next: [03-managing-containers-and-images](../03-managing-containers-and-images/)
+— see, enter, stop, and clean up the containers you're creating.

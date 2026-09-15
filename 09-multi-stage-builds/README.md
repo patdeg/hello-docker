@@ -1,4 +1,4 @@
-# 07 — Multi-stage builds
+# 09 — Multi-stage builds
 
 ## Goal
 
@@ -19,7 +19,7 @@ your final image.
 ## Try it
 
 ```bash
-cd 07-multi-stage-builds
+cd 09-multi-stage-builds
 docker build -t hello-go .
 docker run --rm hello-go
 ```
@@ -44,14 +44,20 @@ Smaller images:
   your container),
 - are cheaper to store and transfer.
 
-This is a core hardening technique, and it's exactly what lesson 12
+This is a core hardening technique, and it's exactly what lesson 14
 (hardened Minecraft server) uses: download/prepare the server in one stage,
 copy only what's needed into a minimal final image.
 
 ## Try it yourself
 
-1. Try `docker run --rm --entrypoint sh hello-go` — it should fail. There's
-   no shell in `scratch`. Compare with `docker run --rm --entrypoint sh <the builder image>`.
+1. Try `docker run -it --rm --entrypoint sh hello-go` — it fails with
+   `exec: "sh": executable file not found in $PATH`. There's no shell in
+   `scratch`, which also means `docker exec -it ... sh` will never work on
+   this image: you can't "sh into" something that has no `sh`. Now build
+   *only* the first stage and give it its own name:
+   `docker build --target builder -t hello-go-builder .`, then
+   `docker run -it --rm hello-go-builder sh` — the whole Go toolchain is in
+   there. Compare both with `docker image ls "hello-go*"`.
 2. Add a second function to `hello.go` that reads an environment variable
    and prints it (`os.Getenv("MY_VAR")`), rebuild, and run with
    `docker run --rm -e MY_VAR=hi hello-go`.
@@ -60,5 +66,5 @@ copy only what's needed into a minimal final image.
    projects use — `alpine` is a common, more practical middle ground because
    it still gives you a shell and package manager for debugging.
 
-Next: [08-non-root-user](../08-non-root-user/) — stop running your
+Next: [10-non-root-user](../10-non-root-user/) — stop running your
 containers as root.

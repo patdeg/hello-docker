@@ -1,5 +1,5 @@
 # ---- Stage 1: download + verify the server jar ----
-# Same idea as lesson 07's multi-stage build: none of this stage's tools
+# Same idea as lesson 09's multi-stage build: none of this stage's tools
 # (curl, the checksum utilities) end up in the final image.
 FROM alpine:3.20 AS downloader
 

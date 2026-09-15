@@ -13,10 +13,10 @@ Thumbs.db
 !**/deps/*.jar
 
 # Minecraft world data / server runtime state (never commit these)
-11-minecraft-server-basic/data/
-11-minecraft-server-basic/world/
-12-minecraft-server-hardened/data/
-12-minecraft-server-hardened/world/
+13-minecraft-server-basic/data/
+13-minecraft-server-basic/world/
+14-minecraft-server-hardened/data/
+14-minecraft-server-hardened/world/
 **/logs/
 **/*.log
 
@@ -27,3 +27,9 @@ Thumbs.db
 
 # Internal session/planning notes - not part of the public teaching content
 docs/
+
+# Files the lessons' exercises create on your computer
+03-managing-containers-and-images/note.txt
+08-bind-mounts/output/
+08-bind-mounts/my-stie/
+14-minecraft-server-hardened/world-backup-*.tar.gz

@@ -1,3 +1,9 @@
+# A fixed project name. Without it, Compose names the project after this
+# folder, and the world volume after the project — so renaming the folder
+# would make Compose create a brand-new, EMPTY world volume and "lose" your
+# world (the old volume still exists, just under the old name).
+name: hello-docker-minecraft
+
 services:
   minecraft:
     build:
@@ -16,6 +22,9 @@ services:
     # to type console commands (e.g. "stop", "save-all") into the server.
     stdin_open: true
     tty: true
+    # Saving a big world can take longer than Docker's default 10-second
+    # wait before it force-kills a container. Give it a full minute.
+    stop_grace_period: 1m
     restart: unless-stopped
 
 volumes:

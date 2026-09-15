@@ -1,4 +1,4 @@
-# 04 — ARG vs ENV: making images configurable
+# 05 — ARG vs ENV: making images configurable
 
 ## Goal
 
@@ -21,7 +21,7 @@ when to use each.
 ## Try it
 
 ```bash
-cd 04-environment-and-args
+cd 05-environment-and-args
 
 # 1. Build and run with the default
 docker build -t greeter .
@@ -38,6 +38,23 @@ docker run --rm greeter-victor
 # -> Hello, Victor! (from inside a container)
 ```
 
+## Looking at environment variables from the outside
+
+```bash
+# What's baked into the image?
+docker image inspect -f '{{.Config.Env}}' greeter
+# -> [PATH=/usr/local/sbin:... GREETING_NAME=World]
+
+# What does a container actually see? Swap the entrypoint for `env`,
+# which just prints every environment variable:
+docker run --rm --entrypoint env greeter
+docker run --rm -e GREETING_NAME=Victor --entrypoint env greeter
+```
+
+This is also the reason you should **never put passwords in `ENV` or
+`ARG`**: anyone who has the image can read them with `docker image inspect`
+or `docker history`. Lesson 14 shows the right way.
+
 ## Try it yourself
 
 1. Run `docker run --rm -e GREETING_NAME=Anthony greeter-victor` — does the
@@ -49,5 +66,5 @@ docker run --rm greeter-victor
    only inside the script that runs later? (Try `RUN echo "building for ${GREETING_NAME}"`
    right after the `ENV` line and watch the build output.)
 
-Next: [05-exposing-ports](../05-exposing-ports/) — run something that
+Next: [06-exposing-ports](../06-exposing-ports/) — run something that
 listens on the network.

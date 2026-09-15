@@ -1,0 +1,18 @@
+services:
+  web:
+    build: ./web
+    # Same as `docker run -p 8080:8000` (lesson 06).
+    ports:
+      - "8080:8000"
+    # Same as `docker run -v "$(pwd)/web/www:/www:ro"` (lesson 08): edit
+    # web/www/index.html on your computer and the change is live, no rebuild.
+    # Compose lets you use a relative path here — it's relative to this file.
+    volumes:
+      - ./web/www:/www:ro
+    restart: unless-stopped
+
+  counter:
+    build: ./counter
+    depends_on:
+      - web
+    restart: unless-stopped

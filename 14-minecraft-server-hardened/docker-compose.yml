@@ -1,3 +1,9 @@
+# A fixed project name. Without it, Compose names the project after this
+# folder, and the world volume after the project — so renaming the folder
+# would make Compose create a brand-new, EMPTY world volume and "lose" your
+# world (the old volume still exists, just under the old name).
+name: hello-docker-minecraft-hardened
+
 services:
   minecraft:
     build:
@@ -9,11 +15,11 @@ services:
         MC_SERVER_SHA256: "REPLACE_ME_OR_LEAVE_BLANK"
     ports:
       - "25565:25565"
-      # RCON (25575) is deliberately NOT published here. Uncomment only if
-      # you actually need remote console access from outside this machine,
-      # and only after scoping it at your firewall - never expose RCON to
-      # the open internet.
-      # - "25575:25575"
+      # RCON (25575) is deliberately NOT published here. If you need it,
+      # uncomment this line: the 127.0.0.1 in front means only THIS computer
+      # can reach it (lesson 06). Never publish RCON as plain "25575:25575" -
+      # a host firewall like ufw won't reliably block a Docker-published port.
+      # - "127.0.0.1:25575:25575"
     env_file:
       - .env  # copy .env.example -> .env first; never commit the real one
     volumes:
@@ -43,9 +49,12 @@ services:
     cpus: 2.0
     pids_limit: 512
 
+    # Saving a big world can take longer than Docker's default 10-second
+    # wait before it force-kills a container. Give it a full minute.
+    stop_grace_period: 1m
     restart: unless-stopped
     # Lets you `docker compose attach minecraft` for console access (see
-    # lesson 11's README) without also allowing Ctrl+C to kill the server.
+    # lesson 13's README) without also allowing Ctrl+C to kill the server.
     stdin_open: true
     tty: true
 
