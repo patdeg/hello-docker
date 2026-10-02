@@ -37,6 +37,23 @@ them in order — each one builds on ideas from the last.
 | 13 | [minecraft-server-basic](13-minecraft-server-basic/) | putting it together: a real, working server |
 | 14 | [minecraft-server-hardened](14-minecraft-server-hardened/) | security hardening, backups, capstone project |
 
+### Security track: containers that can't be quietly changed
+
+Lessons 15-19 go deeper on one question: *how do you make a container that
+a buggy program, a tricked program, or an AI agent following a bad
+instruction can't secretly rewrite, including its own logs?* Every lesson
+has an "attack it" exercise you run twice, once with the protection off (the
+attack works) and once with it on (it's blocked), plus a box listing what
+the protection does **not** cover.
+
+| # | Lesson | New concepts |
+|---|--------|---------------|
+| 15 | [walls-not-requests](15-walls-not-requests/) | rules vs permissions, code owned by root, attacking your own container |
+| 16 | [lock-every-window](16-lock-every-window/) | `--read-only`, `--tmpfs` (`noexec`), `--cap-drop`/`--cap-add`, `no-new-privileges`, setuid |
+| 17 | [logs-the-app-cant-erase](17-logs-the-app-cant-erase/) | a separate log keeper, `:ro` mounts, `docker network create`, `docker logs`, logging drivers |
+| 18 | [tamper-evident-logbook](18-tamper-evident-logbook/) | SHA-256 fingerprints, hash chains, checkpoints kept somewhere else |
+| 19 | [pin-by-digest-and-honest-limits](19-pin-by-digest-and-honest-limits/) | tags vs image IDs vs digests, `FROM …@sha256:`, user namespaces, what Docker can't protect |
+
 ## Why Minecraft?
 
 A Minecraft server is a perfect capstone: it's a real long-running network
@@ -65,6 +82,7 @@ docker image rm NAME                   # delete an image                        
 docker tag NAME NAME:v1                # add another tag (label) to an image     [03]
 docker history NAME                    # the layers an image is made of          [04]
 docker image inspect NAME              # all details (env, cmd, ...)             [05]
+docker images --digests                # registry fingerprints of your images    [19]
 ```
 
 **Running containers**
@@ -80,6 +98,12 @@ docker run -v myvol:/data NAME         # named volume                           
 docker run -v "$(pwd)/dir:/data:ro" NAME   # bind mount a folder, read-only      [08]
 docker run --user "$(id -u):$(id -g)" NAME # run as you, not root                [08]
 docker run --restart unless-stopped NAME   # bring it back if it crashes         [11]
+docker run --read-only --tmpfs /tmp NAME   # read-only, with a scratch folder   [16]
+docker run --cap-drop ALL NAME         # no root superpowers                     [16]
+docker run --security-opt no-new-privileges NAME  # setuid can't add power      [16]
+docker run -v myvol:/data:ro NAME      # volume read-only                        [17]
+docker run --rm sha256:IMAGE-ID       # run exactly this image, by fingerprint  [19]
+docker pull NAME@sha256:DIGEST         # pull exactly this image from a registry [19]
 ```
 
 **Looking after containers**
@@ -134,7 +158,10 @@ hello-docker/
 ├── 02-custom-image/
 ├── ...
 ├── 13-minecraft-server-basic/
-└── 14-minecraft-server-hardened/
+├── 14-minecraft-server-hardened/
+├── 15-walls-not-requests/            <- security track starts here
+├── ...
+└── 19-pin-by-digest-and-honest-limits/
 ```
 
 Work through the folders in order. Each lesson's README ends with a few

@@ -1,0 +1,8 @@
+# The "unlatched windows" version: exactly what you get if you don't think
+# about security at all. No USER line, so everything runs as root, and root
+# can rewrite any file in the container, including the robot's own program.
+FROM alpine:3.20
+
+COPY robot.sh /app/robot.sh
+
+CMD ["sh", "/app/robot.sh"]

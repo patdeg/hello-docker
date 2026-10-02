@@ -33,3 +33,5 @@ docs/
 08-bind-mounts/output/
 08-bind-mounts/my-stie/
 14-minecraft-server-hardened/world-backup-*.tar.gz
+18-tamper-evident-logbook/my-checkpoint.txt
+19-pin-by-digest-and-honest-limits/real-id.txt
