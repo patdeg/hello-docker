@@ -18,6 +18,9 @@ them in order — each one builds on ideas from the last.
 - A terminal and basic comfort with `cd`, `ls`, editing text files.
 - That's it. No prior Docker knowledge needed.
 
+Using **Podman** instead of Docker? See the [Podman Rosetta Stone](PODMAN.md):
+the same lessons, command by command, and where the two differ.
+
 ## The learning path
 
 | # | Lesson | New concepts |
@@ -161,7 +164,8 @@ hello-docker/
 ├── 14-minecraft-server-hardened/
 ├── 15-walls-not-requests/            <- security track starts here
 ├── ...
-└── 19-pin-by-digest-and-honest-limits/
+├── 19-pin-by-digest-and-honest-limits/
+└── PODMAN.md                         <- Docker -> Podman command guide
 ```
 
 Work through the folders in order. Each lesson's README ends with a few
