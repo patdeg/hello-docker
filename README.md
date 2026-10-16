@@ -171,3 +171,43 @@ hello-docker/
 Work through the folders in order. Each lesson's README ends with a few
 "try it yourself" exercises — do those before moving on; that's where the
 actual learning happens.
+
+## Where this goes next: from one box to a cluster
+
+Lessons 01-19 are deliberately **single-machine Docker only** — that's the
+whole point of the name. But almost everything here has a direct equivalent
+one level up, when you start running containers across *more than one*
+computer with an orchestrator like **k3s** (lightweight Kubernetes):
+
+| You already know (Docker/Compose) | Becomes (Kubernetes/k3s) |
+|---|---|
+| a `docker-compose.yml` service | a **Deployment** (how many copies, what image, what restart policy) |
+| Compose's private network + DNS-by-service-name (lesson 12) | a **Service** (same idea: call it by name, not IP) |
+| a named volume (lesson 07) | a **PersistentVolume** / **PersistentVolumeClaim** |
+| `-e VAR=value` / `.env` (lesson 05, 14) | a **ConfigMap** (plain values) or **Secret** (passwords, tokens) |
+| `-p 8080:8000` (lesson 06) | an **Ingress** or a `NodePort`/`LoadBalancer` Service |
+| `HEALTHCHECK` + `--restart` (lesson 11) | **liveness/readiness probes** + the Deployment's own restart behavior |
+| `--read-only`, `--cap-drop`, `--user` (lessons 10, 16) | the same flags, now under a pod's `securityContext` |
+| `docker compose up --scale counter=3` (lesson 12) | `kubectl scale deployment … --replicas=3` |
+
+None of that is new *ideas* — it's the same questions ("where does this
+save its data", "how do two services find each other", "what happens when
+it crashes") asked about several machines acting as one instead of one
+machine. That's why this repo stops here instead of adding a lesson 20: a
+cluster brings in its own machinery (nodes joining, overlay networking,
+`kubectl`) that deserves its own from-scratch numbered path the same way
+Docker got one — not a tacked-on lesson at the end of a repo titled
+"hello-docker". It also means the next repo doesn't have to be public and
+generic the way this one is; it can talk about real hosts and a real game.
+
+Two things worth doing with what's already here before moving on:
+
+- **Run lessons 11 and 13-14 for real**, end to end, with a current
+  Minecraft server download — per `docs/session-notes.md` that was never
+  actually verified, only built. Do this *before* trusting those Dockerfiles
+  as the pattern for a containerized Minecraft service in a cluster.
+- Fix the known bug in lessons 13-14: `server.jar` is stored inside the
+  world volume, so rebuilding with a newer `MC_VERSION` silently keeps
+  running the *old* jar. Move the jar outside `/data` first — the same
+  "where does this save its data" question a PersistentVolumeClaim will
+  ask again later, so it's worth getting right here first.
