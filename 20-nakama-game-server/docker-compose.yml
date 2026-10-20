@@ -1,0 +1,125 @@
+# A fixed project name, same reasoning as lesson 14: without it, Compose
+# names the project after this folder, and the database volume after the
+# project - renaming the folder would silently create a brand-new, EMPTY
+# database volume.
+name: hello-docker-nakama
+
+services:
+  # --- The database ---
+  # Nakama's own upstream docker-compose.yml (github.com/heroiclabs/nakama)
+  # ships CockroachDB by default. This lesson uses plain PostgreSQL instead -
+  # Nakama's own README says it "requires CockroachDB or another Postgres
+  # wire-compatible server", and Postgres is the simpler, more familiar
+  # choice for a Docker lesson. This is the "clone it, then update it" part
+  # of the exercise - see README.md.
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - .env  # copy .env.example -> .env first; never commit the real one
+    environment:
+      POSTGRES_DB: nakama
+      POSTGRES_USER: nakama
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - nakama-net
+    # No "ports:" here at all. Nothing outside this Compose project - not
+    # your LAN, not "strangers" - can reach Postgres directly. Only the
+    # nakama service, over the private nakama-net network, ever talks to it.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nakama -d nakama"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+    # --- Hardening (same toolbox as lesson 14) ---
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
+    cap_drop:
+      - ALL
+    # Postgres's own entrypoint (initdb, then dropping to the "postgres"
+    # user) genuinely needs these four - this is Postgres's own official
+    # image doing privileged setup, not something this lesson added.
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - SETUID
+      - SETGID
+      - FOWNER
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 200
+
+  # --- The game server ---
+  nakama:
+    image: heroiclabs/nakama:3.37.0
+    # The official image has no built-in non-root user (it runs as root by
+    # default - check yourself with `docker run --rm --entrypoint sh
+    # heroiclabs/nakama:3.37.0 -c id`). Same fix as lesson 10/14: pick a
+    # UID/GID ourselves. 10000:10000 must own ./data on the host first -
+    # see README.md "Try it".
+    user: "10000:10000"
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    # Runs the database migration, then starts the server. Secrets come
+    # from .env at container start (never baked into the image - check
+    # with `docker history heroiclabs/nakama:3.37.0`), same pattern as
+    # lesson 14's RCON password.
+    entrypoint:
+      - /bin/sh
+      - -ecx
+      - >
+        /nakama/nakama migrate up --database.address nakama:${POSTGRES_PASSWORD}@postgres:5432/nakama &&
+        exec /nakama/nakama --name nakama-node1
+        --database.address nakama:${POSTGRES_PASSWORD}@postgres:5432/nakama
+        --socket.server_key "${NAKAMA_SERVER_KEY}"
+        --console.username "${NAKAMA_CONSOLE_USER}"
+        --console.password "${NAKAMA_CONSOLE_PASSWORD}"
+        --logger.level INFO
+    volumes:
+      - ./data:/nakama/data
+    networks:
+      - nakama-net
+
+    # --- Ports: safe-by-default (127.0.0.1 = this computer only) ---
+    # This is deliberately the CLOSED starting position. See README.md's
+    # "Opening this to strangers" section before changing any of these -
+    # especially before touching the console line.
+    ports:
+      - "127.0.0.1:7349:7349"   # gRPC API
+      - "127.0.0.1:7350:7350"   # HTTP/WebSocket API - what game clients use
+      - "127.0.0.1:7351:7351"   # Admin CONSOLE - never bind this beyond localhost
+
+    healthcheck:
+      test: ["CMD", "/nakama/nakama", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    # --- Hardening (same toolbox as lesson 14) ---
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 1024m
+    cpus: 2.0
+    pids_limit: 300
+
+networks:
+  nakama-net:
+    driver: bridge
+
+volumes:
+  pg-data:

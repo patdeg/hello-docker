@@ -20,6 +20,9 @@ Thumbs.db
 **/logs/
 **/*.log
 
+# Nakama runtime data (modules, .cookie) - never commit these
+20-nakama-game-server/data/
+
 # Local env files with real secrets (keep only *.env.example in git)
 .env
 **/.env

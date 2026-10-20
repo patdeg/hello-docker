@@ -57,6 +57,12 @@ the protection does **not** cover.
 | 18 | [tamper-evident-logbook](18-tamper-evident-logbook/) | SHA-256 fingerprints, hash chains, checkpoints kept somewhere else |
 | 19 | [pin-by-digest-and-honest-limits](19-pin-by-digest-and-honest-limits/) | tags vs image IDs vs digests, `FROM …@sha256:`, user namespaces, what Docker can't protect |
 
+### A second capstone: a real game server
+
+| # | Lesson | New concepts |
+|---|--------|---------------|
+| 20 | [nakama-game-server](20-nakama-game-server/) | a real open-source multiplayer server + its database as two Compose services, taking an upstream project's own Compose file and hardening it for public use |
+
 ## Why Minecraft?
 
 A Minecraft server is a perfect capstone: it's a real long-running network
@@ -165,6 +171,7 @@ hello-docker/
 ├── 15-walls-not-requests/            <- security track starts here
 ├── ...
 ├── 19-pin-by-digest-and-honest-limits/
+├── 20-nakama-game-server/            <- second capstone: a real multiplayer server
 └── PODMAN.md                         <- Docker -> Podman command guide
 ```
 
@@ -193,12 +200,13 @@ computer with an orchestrator like **k3s** (lightweight Kubernetes):
 None of that is new *ideas* — it's the same questions ("where does this
 save its data", "how do two services find each other", "what happens when
 it crashes") asked about several machines acting as one instead of one
-machine. That's why this repo stops here instead of adding a lesson 20: a
-cluster brings in its own machinery (nodes joining, overlay networking,
-`kubectl`) that deserves its own from-scratch numbered path the same way
-Docker got one — not a tacked-on lesson at the end of a repo titled
-"hello-docker". It also means the next repo doesn't have to be public and
-generic the way this one is; it can talk about real hosts and a real game.
+machine. That's why this repo deliberately stays **single-machine Docker
+only** even with lesson 20 added: a cluster brings in its own machinery
+(nodes joining, overlay networking, `kubectl`) that deserves its own
+from-scratch numbered path the same way Docker got one — not a tacked-on
+lesson in a repo titled "hello-docker". It also means that future repo
+doesn't have to be public and generic the way this one is; it can talk
+about real hosts and a real game.
 
 Two things worth doing with what's already here before moving on:
 
