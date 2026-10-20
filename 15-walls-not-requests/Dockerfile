@@ -11,12 +11,12 @@ RUN adduser -D -H -u 10001 robot
 COPY robot.sh /app/robot.sh
 
 # COPY makes files owned by root. We keep it that way on purpose, and make
-# the folder and file read-only for everybody (5 = read+run, 4 = read).
+# the folder and file read-only for everybody (a = everybody, r = read, x = run).
 #
 # Compare with lesson 10, which did `chown -R app:app /www`. That was fine for
 # web pages, but for a PROGRAM it would hand the robot the key to rewrite
 # itself. The app only needs to READ its code, so that's all we give it.
-RUN chmod 555 /app && chmod 444 /app/robot.sh
+RUN chmod a=rx /app && chmod a=r /app/robot.sh
 
 USER robot
 

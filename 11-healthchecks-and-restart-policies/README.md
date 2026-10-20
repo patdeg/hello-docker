@@ -49,11 +49,11 @@ The `STATUS` column should eventually show `Up ... (healthy)`.
    health-check history Docker is keeping.
 2. **Make it unhealthy without crashing it.** Take away the server's
    permission to read its own files:
-   `docker exec web3 chmod 000 /www`. The server is still running, but every
+   `docker exec web3 chmod a-rwx /www`. The server is still running, but every
    request now gets an error — exactly the "running but broken" case. Watch
    `docker ps` — within about 30 seconds (3 failed checks, 10 seconds apart)
    it flips to `(unhealthy)`. Read why with the `docker inspect` command from
-   exercise 1. Fix it with `docker exec web3 chmod 755 /www` and watch it
+   exercise 1. Fix it with `docker exec web3 chmod a+rx /www` and watch it
    return to `(healthy)`.
 
    Note that Docker did **not** restart the unhealthy container. Plain

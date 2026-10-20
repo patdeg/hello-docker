@@ -11,7 +11,7 @@ RUN apk add --no-cache doas \
  && echo 'permit nopass robot as root' > /etc/doas.d/robot.conf
 
 COPY robot.sh /app/robot.sh
-RUN chmod 555 /app && chmod 444 /app/robot.sh
+RUN chmod a=rx /app && chmod a=r /app/robot.sh
 
 USER robot
 CMD ["sh", "/app/robot.sh"]

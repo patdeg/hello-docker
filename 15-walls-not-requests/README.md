@@ -28,7 +28,7 @@ bad instruction it read on a web page. When that happens, the rule is gone.
 ## New concepts
 
 - **File ownership as a wall.** A file owned by `root` with permissions
-  `444` (read-only for everyone) can be *read* and *run* by an ordinary user,
+  `a=r` (everybody can read, nobody can write) can be *read* and *run* by an ordinary user,
   but not changed.
 - **Don't give the app its own keys.** Lesson [10](../10-non-root-user/)
   did `chown -R app:app /www`, which made sense for web pages. For the

@@ -7,7 +7,7 @@ RUN adduser -D -H -u 10002 keeper \
  && mkdir /logs && chown keeper:keeper /logs
 
 COPY append.sh /keeper/append.sh
-RUN chmod 555 /keeper && chmod 555 /keeper/append.sh
+RUN chmod a=rx /keeper && chmod a=rx /keeper/append.sh
 
 USER keeper
 
