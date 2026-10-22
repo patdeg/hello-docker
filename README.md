@@ -219,3 +219,11 @@ Two things worth doing with what's already here before moving on:
   running the *old* jar. Move the jar outside `/data` first — the same
   "where does this save its data" question a PersistentVolumeClaim will
   ask again later, so it's worth getting right here first.
+
+## License
+
+- **Code** (Dockerfiles, scripts and compose files) is under the [MIT License](LICENSE).
+- **Lessons, text and diagrams** are under
+  [Creative Commons Attribution 4.0](LICENSE-CONTENT) (CC BY 4.0). Use and
+  adapt them freely, including for teaching, and credit "Patrick Deglon" with
+  a link to this repository.
